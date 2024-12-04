@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .forms-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .form-section, .list-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .product-list {
+            margin-top: 20px;
+        }
+        .product-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Management System</h1>
+
+        <!-- Forms Container -->
+        <div class="forms-container">
+            <!-- Add Product Section -->
+            <div class="form-section">
+                <h2>Add Product</h2>
+                <form id="addProductForm">
+                    <input type="text" id="productId" placeholder="Product ID" required>
+                    <input type="text" id="batchId" placeholder="Batch ID" required>
+                    <input type="text" id="name" placeholder="Product Name" required>
+                    <input type="text" id="description" placeholder="Description" required>
+                    <input type="number" id="quantity" placeholder="Quantity" required>
+                    <input type="number" id="manufacturingYear" placeholder="Manufacturing Year" required>
+                    <input type="number" id="costPrice" placeholder="Cost Price" required>
+                    <input type="number" id="mrp" placeholder="MRP" required>
+                    <input type="number" id="price" placeholder="Selling Price" required>
+                    <input type="text" id="category" placeholder="Category" required>
+                    <button type="button" onclick="addProduct()">Add Product</button>
+                </form>
+            </div>
+
+            <!-- Update Product Section -->
+            <div class="form-section">
+                <h2>Update Product</h2>
+                <form id="updateProductForm">
+                    <input type="text" id="updateProductId" placeholder="Existing Product ID" required>
+                    <input type="text" id="newBatchId" placeholder="New Batch ID" required>
+                    <input type="text" id="newName" placeholder="New Product Name" required>
+                    <input type="text" id="newDescription" placeholder="New Description" required>
+                    <input type="number" id="newQuantity" placeholder="New Quantity" required>
+                    <input type="number" id="newManufacturingYear" placeholder="New Manufacturing Year" required>
+                    <input type="number" id="newCostPrice" placeholder="New Cost Price" required>
+                    <input type="number" id="newMrp" placeholder="New MRP" required>
+                    <input type="number" id="newPrice" placeholder="New Selling Price" required>
+                    <input type="text" id="newCategory" placeholder="New Category" required>
+                    <button type="button" onclick="updateProduct()">Update Product</button>
+                </form>
+            </div>
+
+            <!-- Delete Product Section -->
+            <div class="form-section">
+                <h2>Delete Product</h2>
+                <form id="deleteProductForm">
+                    <input type="text" id="deleteProductId" placeholder="Product ID" required>
+                    <button type="button" onclick="deleteProduct()">Delete Product</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- List Products Section -->
+        <div class="list-section">
+            <h2>Product List</h2>
+            <button onclick="listProducts()">Refresh List</button>
+            <div id="productList" class="product-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'http://127.0.0.1:3000';
+
+        // Add Product
+        function addProduct() {
+            const product = {
+                productId: document.getElementById('productId').value,
+                batchId: document.getElementById('batchId').value,
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                quantity: document.getElementById('quantity').value,
+                manufacturingYear: document.getElementById('manufacturingYear').value,
+                costPrice: document.getElementById('costPrice').value,
+                mrp: document.getElementById('mrp').value,
+                price: document.getElementById('price').value,
+                category: document.getElementById('category').value,
+            };
+
+            fetch(`${apiUrl}/product/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product),
+            })
+                .then(response => response.json())
+                .then(data => alert(data.msg))
+                .catch(error => console.error(error));
+        }
+
+        // Update Product
+        function updateProduct() {
+            const productId = document.getElementById('updateProductId').value;
+            const updatedProduct = {
+                batchId: document.getElementById('newBatchId').value,
+                name: document.getElementById('newName').value,
+                description: document.getElementById('newDescription').value,
+                quantity: document.getElementById('newQuantity').value,
+                manufacturingYear: document.getElementById('newManufacturingYear').value,
+                costPrice: document.getElementById('newCostPrice').value,
+                mrp: document.getElementById('newMrp').value,
+                price: document.getElementById('newPrice').value,
+                category: document.getElementById('newCategory').value,
+            };
+
+            fetch(`${apiUrl}/product/update/${productId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedProduct),
+            })
+                .then(response => response.json())
+                .then(data => alert(data.msg))
+                .catch(error => console.error(error));
+        }
+
+        // Delete Product
+        function deleteProduct() {
+            const productId = document.getElementById('deleteProductId').value;
+
+            fetch(`${apiUrl}/product/delete/${productId}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.json())
+                .then(data => alert(data.msg))
+                .catch(error => console.error(error));
+        }
+
+        // List Products
+        function listProducts() {
+            fetch(`${apiUrl}/product/list`)
+                .then(response => response.json())
+                .then(data => {
+                    const productList = document.getElementById('productList');
+                    productList.innerHTML = '';
+                    data.forEach(product => {
+                        productList.innerHTML += `
+                            <div class="product-item">
+                                <strong>Product ID:</strong> ${product.productId} <br>
+                                <strong>Name:</strong> ${product.name} <br>
+                                <strong>Description:</strong> ${product.description} <br>
+                                <strong>Quantity:</strong> ${product.quantity} <br>
+                                <strong>Manufacturing Year:</strong> ${product.manufacturingYear} <br>
+                                <strong>MRP:</strong> ${product.mrp} <br>
+                                <strong>Price:</strong> ${product.price} <br>
+                                <strong>Category:</strong> ${product.category} <br>
+                                <strong>Batch ID:</strong> ${product.batchId}
+                            </div>`;
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        // Initialize Product List on Load
+        listProducts();
+    </script>
+</body>
+</html>
